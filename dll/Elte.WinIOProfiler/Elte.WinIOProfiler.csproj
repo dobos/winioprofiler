@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Elte.WinIOProfiler</RootNamespace>
+    <AssemblyName>IOProfiler</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ZedGraph">
+      <HintPath>..\..\lib\ZedGraph.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BasicIOSettings.cs" />
+    <Compile Include="BlockSizeTest.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Disk.cs" />
+    <Compile Include="IOTest.cs" />
+    <Compile Include="IOTestPlot.cs" />
+    <Compile Include="IOWorkerResults.cs" />
+    <Compile Include="LogicalDisk.cs" />
+    <Compile Include="OutstandingIOTest.cs" />
+    <Compile Include="PhysicalDisk.cs" />
+    <Compile Include="LogicalDiskProfiler.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="SystemProfiler.cs" />
+    <Compile Include="IOWorker.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SequentialReadWorker.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="WMI\Win32_DiskDrive.cs" />
+    <Compile Include="WMI\Win32_DiskPartition.cs" />
+    <Compile Include="WMI\Win32_LogicalDisk.cs" />
+    <Compile Include="WMI\Win32_MountPoint.cs" />
+    <Compile Include="WMI\Win32_Volume.cs" />
+    <Compile Include="WMI\WMIWrapperClass.cs" />
+    <Compile Include="WMI\CIM_DiskDrive.cs" />
+    <Compile Include="WMI\CIM_LogicalDevice.cs" />
+    <Compile Include="WMI\CIM_LogicalElement.cs" />
+    <Compile Include="WMI\CIM_ManagedSystemElement.cs" />
+    <Compile Include="WMI\CIM_MediaAccessDevice.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

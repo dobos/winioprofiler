@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elte.WinIOProfiler", "dll\Elte.WinIOProfiler\Elte.WinIOProfiler.csproj", "{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elte.WinIOProfiler.UI", "exe\Elte.WinIOProfiler.UI\Elte.WinIOProfiler.UI.csproj", "{74F0E708-481B-4555-84C4-6AB0C81C3925}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Debug|x86.ActiveCfg = Debug|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Debug|x86.Build.0 = Debug|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Release|Any CPU.ActiveCfg = Release|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Release|Mixed Platforms.Build.0 = Release|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Release|x86.ActiveCfg = Release|x86
+		{40B7892D-C710-48E3-BC5A-76F61D6DE0AC}.Release|x86.Build.0 = Release|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Debug|x86.ActiveCfg = Debug|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Debug|x86.Build.0 = Debug|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Release|Any CPU.ActiveCfg = Release|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Release|Mixed Platforms.Build.0 = Release|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Release|x86.ActiveCfg = Release|x86
+		{74F0E708-481B-4555-84C4-6AB0C81C3925}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
