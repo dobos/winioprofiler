@@ -56,6 +56,7 @@
     <Compile Include="BasicIOSettings.cs" />
     <Compile Include="BlockSizeTest.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="SequentialWriteWorker.cs" />
     <Compile Include="Disk.cs" />
     <Compile Include="IOTest.cs" />
     <Compile Include="IOTestPlot.cs" />

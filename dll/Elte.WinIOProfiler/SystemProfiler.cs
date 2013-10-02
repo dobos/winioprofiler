@@ -37,13 +37,13 @@ namespace Elte.WinIOProfiler
 
         public void Run()
         {
-            foreach (IOTest test in tests)
+            foreach (var test in tests)
             {
                 test.LogicalDisks.Clear();
                 test.LogicalDisks.AddRange(logicalDisks);
             }
 
-            foreach (IOTest test in tests)
+            foreach (var test in tests)
             {
                 test.Run();
             }

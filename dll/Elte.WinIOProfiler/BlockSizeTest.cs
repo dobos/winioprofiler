@@ -10,6 +10,9 @@ using ZedGraph;
 
 namespace Elte.WinIOProfiler
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class BlockSizeTest : IOTest
     {
         //private static readonly uint[] BlockSizes = { 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144 };
@@ -23,6 +26,7 @@ namespace Elte.WinIOProfiler
                 case IOType.Read:
                     return new PerformanceCounter[] { LogicalDisk.GetTotalPerformanceCounter(DiskMetricType.ReadBytesPerSec) };
                 case IOType.Write:
+                    return new PerformanceCounter[] { LogicalDisk.GetTotalPerformanceCounter(DiskMetricType.WriteBytesPerSec) };
                 default:
                     throw new NotImplementedException();
             }

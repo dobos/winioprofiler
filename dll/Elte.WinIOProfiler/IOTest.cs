@@ -10,8 +10,13 @@ using ZedGraph;
 
 namespace Elte.WinIOProfiler
 {
+    /// <summary>
+    /// Implements basic functionality for IO tests.
+    /// </summary>
     public abstract class IOTest
     {
+        protected string text;
+
         protected BasicIOSettings ioSettings;
 
         protected List<LogicalDisk> logicalDisks;
@@ -25,17 +30,29 @@ namespace Elte.WinIOProfiler
 
         protected bool hasResults;
 
+        public string Text
+        {
+            get { return text; }
+            set { text = value; }
+        }
+
         public BasicIOSettings IOSettings
         {
             get { return ioSettings; }
             set { ioSettings = value; }
         }
 
+        /// <summary>
+        /// Gets the list of logical disk volumes to be included in the test.
+        /// </summary>
         public List<LogicalDisk> LogicalDisks
         {
             get { return logicalDisks; }
         }
 
+        /// <summary>
+        /// Gets the value indicating whether this test has results.
+        /// </summary>
         public bool HasResults
         {
             get { return hasResults; }
@@ -48,6 +65,7 @@ namespace Elte.WinIOProfiler
 
         private void InitializeMembers()
         {
+            this.text = "undefined test";
             this.ioSettings = new BasicIOSettings();
 
             this.logicalDisks = new List<LogicalDisk>();
@@ -56,6 +74,9 @@ namespace Elte.WinIOProfiler
             this.hasResults = false;
         }
 
+        /// <summary>
+        /// Runs the test.
+        /// </summary>
         public void Run()
         {
             counters = new List<PerformanceCounter>(InitializeCounters());
@@ -73,16 +94,27 @@ namespace Elte.WinIOProfiler
             hasResults = true;
         }
 
+        /// <summary>
+        /// When inherited in derived classes, initializes performance counters
+        /// necessary to evaluate the test.
+        /// </summary>
+        /// <returns></returns>
         protected abstract PerformanceCounter[] InitializeCounters();
 
+        /// <summary>
+        /// Starts all counters.
+        /// </summary>
         protected void StartCounters()
         {
             counterStop = new CancellationTokenSource();
-            CancellationToken ct = counterStop.Token;
+            var ct = counterStop.Token;
 
             counterWorker = Task<float[][]>.Factory.StartNew(() => CounterWorker(ct), ct);
         }
 
+        /// <summary>
+        /// Stops all counters.
+        /// </summary>
         protected void StopCounters()
         {
             counterStop.Cancel();
@@ -91,13 +123,18 @@ namespace Elte.WinIOProfiler
             counterReadouts.Add(counterWorker.Result);
         }
 
+        /// <summary>
+        /// Periodically reads and stores counter values.
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         protected float[][] CounterWorker(CancellationToken ct)
         {
-            List<float[]> readouts = new List<float[]>();
+            var readouts = new List<float[]>();
 
             while (!ct.IsCancellationRequested)
             {
-                float[] ro = new float[counters.Count];
+                var ro = new float[counters.Count];
                 for (int i = 0; i < counters.Count; i++)
                 {
                     ro[i] = counters[i].NextValue();
@@ -105,15 +142,18 @@ namespace Elte.WinIOProfiler
 
                 readouts.Add(ro);
 
-                Thread.Sleep(1000); //***
+                Thread.Sleep(1000); //*** TODO: implement read-out period as parameter
             }
 
             return readouts.ToArray();
         }
 
-        protected void DisposeCounters()
+        /// <summary>
+        /// Dispose all performance counters.
+        /// </summary>
+        private void DisposeCounters()
         {
-            foreach (PerformanceCounter pc in counters)
+            foreach (var pc in counters)
             {
                 pc.Dispose();
             }
@@ -121,18 +161,37 @@ namespace Elte.WinIOProfiler
             counters.Clear();
         }
 
+        /// <summary>
+        /// Adds the results of the current test to the collection of
+        /// all results.
+        /// </summary>
+        /// <param name="results"></param>
+        /// <param name="text"></param>
         protected void RecordResults(IOWorkerResults results, string text)
         {
             results.Text = text;
             workerResults.Add(results);
         }
 
+        /// <summary>
+        /// When overriden in an inherited class, initializes the IO test.
+        /// </summary>
         protected abstract void InitializeTest();
 
+        /// <summary>
+        /// When overriden in an inherited class, executes the IO test.
+        /// </summary>
         protected abstract void ExecuteTest();
 
+        /// <summary>
+        /// When overriden in an inherited class, finalizes the IO test.
+        /// </summary>
         protected abstract void FinalizeTest();
 
+        /// <summary>
+        /// When overriden in an inherited class, returns the generated plots.
+        /// </summary>
+        /// <returns></returns>
         public abstract IOTestPlot[] GetPlots();
 
     }

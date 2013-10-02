@@ -67,7 +67,7 @@ namespace Elte.WinIOProfiler
 
         protected long GetFileSizePerThread()
         {
-            return ioSettings.Outstanding * ioSettings.IOsPerRun * ioSettings.BlockSize;
+            return ioSettings.Outstanding * ioSettings.IOsPerRun * ioSettings.BlockSize * ioSettings.FileSizeMultiplier;
         }
 
         protected long GetMinimumFileSize()

@@ -13,20 +13,26 @@ namespace IOProfilerUI
 {
     public partial class MainForm : Form
     {
-        IOTest selectedTest;
+        private IOTest selectedTest;
 
         public MainForm()
         {
             InitializeComponent();
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.selectedTest = null;
         }
 
         private void RefreshVolumesList()
         {
             listVolumes.Items.Clear();
 
-            foreach (LogicalDisk d in LogicalDisk.GetLogicalDisks())
+            foreach (var d in LogicalDisk.GetLogicalDisks())
             {
-                ListViewItem li = new ListViewItem(d.Caption);
+                var li = new ListViewItem(d.Caption);
                 li.SubItems.Add(d.FileSystem);
                 li.SubItems.Add(Util.FormatFileSize(d.Size));
                 li.Tag = d;
@@ -35,11 +41,9 @@ namespace IOProfilerUI
             }
         }
 
-        private void AddBlockSizeTest()
+        private void AddTest(IOTest test)
         {
-            BlockSizeTest test = new BlockSizeTest();
-
-            ListViewItem li = new ListViewItem("Block size test");
+            var li = new ListViewItem(test.Text);
             li.Tag = test;
             listTests.Items.Add(li);
         }
@@ -48,8 +52,6 @@ namespace IOProfilerUI
         {
             this.Enabled = false;
             Cursor.Current = Cursors.WaitCursor;
-
-
 
             SystemProfiler profiler = new SystemProfiler();
 
@@ -80,9 +82,19 @@ namespace IOProfilerUI
 
         private void toolStripTests_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem == toolButtonAddBlockSizeTest)
+            if (e.ClickedItem == toolButtonSequentialReadBlockSizeTest)
             {
-                AddBlockSizeTest();
+                var test = new BlockSizeTest();
+                test.Text = "SequentialReadBlockSizeTest";
+                test.IOSettings.IOType = IOType.Read;
+                AddTest(test);
+            }
+            else if (e.ClickedItem == toolButtonSequentialWriteBlockSizeTest)
+            {
+                var test = new BlockSizeTest();
+                test.Text = "SequentialWriteBlockSizeTest";
+                test.IOSettings.IOType = IOType.Write;
+                AddTest(test);
             }
         }
 
