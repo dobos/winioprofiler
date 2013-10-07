@@ -146,15 +146,41 @@ namespace Elte.WinIOProfiler
 
         public void Run()
         {
-            using (FileStream stream = OpenStream(filename, FileMode.Open, FileAccess.Read, FileShare.None, true, true, (int)IOSettings.BlockSize))
+            FileAccess access;
+
+            switch (ioSettings.IOType)
+            {
+                case IOType.Read:
+                    access = FileAccess.Read;
+                    break;
+                case IOType.Write:
+                    access = FileAccess.Write;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            using (FileStream stream = OpenStream(filename, FileMode.Open, FileAccess.ReadWrite, FileShare.None, true, true, (int)IOSettings.BlockSize))
             {
                 var q = Enumerable.Range(0, IOSettings.Threads).AsParallel().WithDegreeOfParallelism(IOSettings.Threads).Select(i =>
                     {
 
-                        Stopwatch sw = new Stopwatch();
+                        var sw = new Stopwatch();
                         sw.Start();
 
-                        IOWorker worker = new SequentialReadWorker(stream, IOSettings.Outstanding, IOSettings.BlockSize);
+                        IOWorker worker;
+                        switch (ioSettings.IOType)
+                        {
+                            case IOType.Read:
+                                worker = new SequentialReadWorker(stream, IOSettings.Outstanding, IOSettings.BlockSize);
+                                break;
+                            case IOType.Write:
+                                worker = new SequentialWriteWorker(stream, IOSettings.Outstanding, IOSettings.BlockSize);
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                        
 
                         while (sw.ElapsedMilliseconds < ioSettings.TimePerRun.TotalMilliseconds)
                         {

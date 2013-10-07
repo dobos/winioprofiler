@@ -41,6 +41,11 @@
             this.listTests = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.toolStripTests = new System.Windows.Forms.ToolStrip();
+            this.toolButtonAddTest = new System.Windows.Forms.ToolStripDropDownButton();
+            this.sequentiaReadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolButtonSequentialReadBlockSizeTest = new System.Windows.Forms.ToolStripMenuItem();
+            this.sequentialWriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolButtonSequentialWriteBlockSizeTest = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButtonAddOutstandingIOTest = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
@@ -55,11 +60,7 @@
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.toolButtonExecute = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolButtonAddTest = new System.Windows.Forms.ToolStripDropDownButton();
-            this.sequentiaReadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sequentialWriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolButtonSequentialReadBlockSizeTest = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolButtonSequentialWriteBlockSizeTest = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolButtonPlot = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -210,6 +211,49 @@
             this.toolStripTests.Text = "toolStrip2";
             this.toolStripTests.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolStripTests_ItemClicked);
             // 
+            // toolButtonAddTest
+            // 
+            this.toolButtonAddTest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolButtonAddTest.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sequentiaReadToolStripMenuItem,
+            this.sequentialWriteToolStripMenuItem});
+            this.toolButtonAddTest.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonAddTest.Image")));
+            this.toolButtonAddTest.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolButtonAddTest.Name = "toolButtonAddTest";
+            this.toolButtonAddTest.Size = new System.Drawing.Size(29, 22);
+            this.toolButtonAddTest.Text = "toolStripButton5";
+            this.toolButtonAddTest.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolStripTests_ItemClicked);
+            // 
+            // sequentiaReadToolStripMenuItem
+            // 
+            this.sequentiaReadToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolButtonSequentialReadBlockSizeTest});
+            this.sequentiaReadToolStripMenuItem.Name = "sequentiaReadToolStripMenuItem";
+            this.sequentiaReadToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.sequentiaReadToolStripMenuItem.Text = "Sequential read";
+            // 
+            // toolButtonSequentialReadBlockSizeTest
+            // 
+            this.toolButtonSequentialReadBlockSizeTest.Name = "toolButtonSequentialReadBlockSizeTest";
+            this.toolButtonSequentialReadBlockSizeTest.Size = new System.Drawing.Size(193, 22);
+            this.toolButtonSequentialReadBlockSizeTest.Text = "Optimal block size test";
+            this.toolButtonSequentialReadBlockSizeTest.Click += new System.EventHandler(this.toolButtonSequentialReadBlockSizeTest_Click);
+            // 
+            // sequentialWriteToolStripMenuItem
+            // 
+            this.sequentialWriteToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolButtonSequentialWriteBlockSizeTest});
+            this.sequentialWriteToolStripMenuItem.Name = "sequentialWriteToolStripMenuItem";
+            this.sequentialWriteToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.sequentialWriteToolStripMenuItem.Text = "Sequential write";
+            // 
+            // toolButtonSequentialWriteBlockSizeTest
+            // 
+            this.toolButtonSequentialWriteBlockSizeTest.Name = "toolButtonSequentialWriteBlockSizeTest";
+            this.toolButtonSequentialWriteBlockSizeTest.Size = new System.Drawing.Size(193, 22);
+            this.toolButtonSequentialWriteBlockSizeTest.Text = "Optimal block size test";
+            this.toolButtonSequentialWriteBlockSizeTest.Click += new System.EventHandler(this.toolButtonSequentialWriteBlockSizeTest_Click);
+            // 
             // toolButtonAddOutstandingIOTest
             // 
             this.toolButtonAddOutstandingIOTest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -252,7 +296,6 @@
             this.mainGraph.Size = new System.Drawing.Size(564, 465);
             this.mainGraph.TabIndex = 1;
             this.mainGraph.TabStop = false;
-            this.mainGraph.Paint += new System.Windows.Forms.PaintEventHandler(this.mainGraph_Paint);
             // 
             // tabControl1
             // 
@@ -313,7 +356,8 @@
             // toolStripMain
             // 
             this.toolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolButtonExecute});
+            this.toolButtonExecute,
+            this.toolButtonPlot});
             this.toolStripMain.Location = new System.Drawing.Point(0, 24);
             this.toolStripMain.Name = "toolStripMain";
             this.toolStripMain.Size = new System.Drawing.Size(852, 25);
@@ -337,45 +381,14 @@
             this.statusStrip1.TabIndex = 4;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // toolButtonAddTest
+            // toolButtonPlot
             // 
-            this.toolButtonAddTest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolButtonAddTest.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.sequentiaReadToolStripMenuItem,
-            this.sequentialWriteToolStripMenuItem});
-            this.toolButtonAddTest.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonAddTest.Image")));
-            this.toolButtonAddTest.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolButtonAddTest.Name = "toolButtonAddTest";
-            this.toolButtonAddTest.Size = new System.Drawing.Size(29, 22);
-            this.toolButtonAddTest.Text = "toolStripButton5";
-            // 
-            // sequentiaReadToolStripMenuItem
-            // 
-            this.sequentiaReadToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolButtonSequentialReadBlockSizeTest});
-            this.sequentiaReadToolStripMenuItem.Name = "sequentiaReadToolStripMenuItem";
-            this.sequentiaReadToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.sequentiaReadToolStripMenuItem.Text = "Sequential read";
-            // 
-            // sequentialWriteToolStripMenuItem
-            // 
-            this.sequentialWriteToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolButtonSequentialWriteBlockSizeTest});
-            this.sequentialWriteToolStripMenuItem.Name = "sequentialWriteToolStripMenuItem";
-            this.sequentialWriteToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.sequentialWriteToolStripMenuItem.Text = "Sequential write";
-            // 
-            // toolButtonSequentialReadBlockSizeTest
-            // 
-            this.toolButtonSequentialReadBlockSizeTest.Name = "toolButtonSequentialReadBlockSizeTest";
-            this.toolButtonSequentialReadBlockSizeTest.Size = new System.Drawing.Size(193, 22);
-            this.toolButtonSequentialReadBlockSizeTest.Text = "Optimal block size test";
-            // 
-            // toolButtonSequentialWriteBlockSizeTest
-            // 
-            this.toolButtonSequentialWriteBlockSizeTest.Name = "toolButtonSequentialWriteBlockSizeTest";
-            this.toolButtonSequentialWriteBlockSizeTest.Size = new System.Drawing.Size(193, 22);
-            this.toolButtonSequentialWriteBlockSizeTest.Text = "Optimal block size test";
+            this.toolButtonPlot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolButtonPlot.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonPlot.Image")));
+            this.toolButtonPlot.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolButtonPlot.Name = "toolButtonPlot";
+            this.toolButtonPlot.Size = new System.Drawing.Size(23, 22);
+            this.toolButtonPlot.Text = "Plot";
             // 
             // MainForm
             // 
@@ -447,5 +460,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolButtonSequentialReadBlockSizeTest;
         private System.Windows.Forms.ToolStripMenuItem sequentialWriteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolButtonSequentialWriteBlockSizeTest;
+        private System.Windows.Forms.ToolStripButton toolButtonPlot;
     }
 }

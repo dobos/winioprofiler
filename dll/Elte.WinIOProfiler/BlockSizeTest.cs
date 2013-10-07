@@ -15,8 +15,9 @@ namespace Elte.WinIOProfiler
     /// </summary>
     public class BlockSizeTest : IOTest
     {
-        //private static readonly uint[] BlockSizes = { 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144 };
-        private static readonly uint[] BlockSizes = { 65536 };
+        //private static readonly uint[] BlockSizes = { 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576 };
+        private static readonly uint[] BlockSizes = { 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144 };
+        //private static readonly uint[] BlockSizes = { 65536 };
         private LogicalDiskProfiler[] profilers;
 
         protected override PerformanceCounter[] InitializeCounters()
@@ -87,11 +88,64 @@ namespace Elte.WinIOProfiler
         {
             return new IOTestPlot[]
             {
-                new IOTestPlot("Throughput", PlotThroughputGraph),
-                new IOTestPlot("Latency", PlotLatencyGraph)
+                GetThroughputPlot()
             };
         }
 
+        private IOTestPlot GetThroughputPlot()
+        {
+            var plot = new IOTestPlot()
+            {
+                Type = PlotType.Throughput,
+                Text = this.text,
+            };
+
+            switch (ioSettings.IOType)
+            {
+                case IOType.Read:
+                    plot.Color = Color.Blue;
+                    break;
+                case IOType.Write:
+                    plot.Color = Color.Red;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            // x axis will show the block sizes
+            plot.X = new double[BlockSizes.Length];
+            for (int i = 0; i < plot.X.Length; i++)
+            {
+                plot.X[i] = BlockSizes[i];
+            }
+
+            // y axis
+            plot.Y = new double[BlockSizes.Length];
+            plot.YErrMin = new double[BlockSizes.Length];
+            plot.YErrMax = new double[BlockSizes.Length];
+            for (int i = 0; i < plot.Y.Length; i++)
+            {
+                float[][] read = counterReadouts[i];
+
+                double avg = 0;
+                double s2 = 0;
+                for (int j = 0; j < read.Length; j++)
+                {
+                    avg += read[j][0];
+                    s2 += read[j][0] * read[j][0];
+                }
+                avg /= read.Length;
+                s2 = s2 / read.Length - avg * avg;
+
+                plot.Y[i] = avg;
+                plot.YErrMin[i] = avg - Math.Sqrt(s2) / Math.Sqrt(read.Length);
+                plot.YErrMax[i] = avg + Math.Sqrt(s2) / Math.Sqrt(read.Length);
+            }
+
+            return plot;
+        }
+
+        /*
         public void PlotLatencyGraph(Graphics g, RectangleF rect)
         {
             ZedGraph.GraphPane pane = new GraphPane(rect, "IO System Performance", "Block size", "Latency [ms]");
@@ -145,7 +199,9 @@ namespace Elte.WinIOProfiler
 
             pane.Draw(g);
         }
+         * */
 
+        /*
         public void PlotThroughputGraph(Graphics g, RectangleF rect)
         {
             ZedGraph.GraphPane pane = new GraphPane(rect, "IO System Performance", "Block size", "Throughtput []");
@@ -197,6 +253,6 @@ namespace Elte.WinIOProfiler
 
             pane.Draw(g);
         }
-
+        */
     }
 }

@@ -57,4 +57,10 @@ namespace Elte.WinIOProfiler
         CompactDisc = 5,
         RamDisk = 6
     }
+
+    public enum PlotType
+    {
+        Throughput,
+        Latency
+    }
 }

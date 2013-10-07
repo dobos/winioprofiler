@@ -137,11 +137,11 @@ namespace Elte.WinIOProfiler
             this.stripeSize = 64;
 
             this.threads = 1;
-            this.outstanding = 8;
+            this.outstanding = 64;
             this.blockSize = 64;
-            this.fileSizeMultiplier = 4;
+            this.fileSizeMultiplier = 1;
 
-            this.timePerRun = new TimeSpan(0, 0, 20);
+            this.timePerRun = new TimeSpan(0, 0, 10);
         }
 
         private void CopyMembers(BasicIOSettings old)

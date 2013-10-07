@@ -82,20 +82,6 @@ namespace IOProfilerUI
 
         private void toolStripTests_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem == toolButtonSequentialReadBlockSizeTest)
-            {
-                var test = new BlockSizeTest();
-                test.Text = "SequentialReadBlockSizeTest";
-                test.IOSettings.IOType = IOType.Read;
-                AddTest(test);
-            }
-            else if (e.ClickedItem == toolButtonSequentialWriteBlockSizeTest)
-            {
-                var test = new BlockSizeTest();
-                test.Text = "SequentialWriteBlockSizeTest";
-                test.IOSettings.IOType = IOType.Write;
-                AddTest(test);
-            }
         }
 
         private void toolStripMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -103,6 +89,10 @@ namespace IOProfilerUI
             if (e.ClickedItem == toolButtonExecute)
             {
                 ExecuteTests();
+            }
+            else if (e.ClickedItem == toolButtonPlot)
+            {
+                DrawThroughputPlots();
             }
         }
 
@@ -123,12 +113,57 @@ namespace IOProfilerUI
             }
         }
 
-        private void mainGraph_Paint(object sender, PaintEventArgs e)
+        private void DrawThroughputPlots()
         {
-            if (selectedTest != null)
+            var pane = new GraphPane(mainGraph.ClientRectangle, "IO System Performance", "Block size", "");
+
+
+            var blockSizes = new SortedSet<uint>();
+
+            foreach (ListViewItem li in listTests.Items)
             {
-                selectedTest.GetPlots()[0].DrawingMethod(e.Graphics, mainGraph.ClientRectangle);
+                var test = (IOTest)li.Tag;
+                var plot = test.GetPlots()[0];
+
+                pane.AddCurve(plot.Text, plot.X, plot.Y, plot.Color);
+                pane.AddErrorBar("", plot.X, plot.YErrMin, plot.YErrMax, plot.Color);
+
+                for (int i = 0; i < plot.X.Length; i++)
+                {
+                    if (!blockSizes.Contains((uint)plot.X[i]))
+                    {
+                        blockSizes.Add((uint)plot.X[i]);
+                    }
+                }
             }
+
+            var bs = blockSizes.ToArray();
+            var labels = new string[bs.Length];
+            for (int i = 0; i < labels.Length; i++)
+            {
+                labels[i] = Util.FormatFileSize(bs[i]);
+            }
+            pane.XAxis.Type = AxisType.Text;
+            pane.XAxis.Scale.TextLabels = labels;
+
+            pane.AxisChange();
+            pane.Draw(mainGraph.CreateGraphics());
+        }
+
+        private void toolButtonSequentialWriteBlockSizeTest_Click(object sender, EventArgs e)
+        {
+            var test = new BlockSizeTest();
+            test.Text = "SequentialWriteBlockSizeTest";
+            test.IOSettings.IOType = IOType.Write;
+            AddTest(test);
+        }
+
+        private void toolButtonSequentialReadBlockSizeTest_Click(object sender, EventArgs e)
+        {
+            var test = new BlockSizeTest();
+            test.Text = "SequentialReadBlockSizeTest";
+            test.IOSettings.IOType = IOType.Read;
+            AddTest(test);
         }
 
     }
