@@ -13,6 +13,7 @@ namespace Elte.WinIOProfiler
     public class LogicalDiskProfiler
     {
         #region DLLimport
+
         const int FILE_FLAG_NO_BUFFERING = unchecked((int)0x20000000);
         const int FILE_FLAG_OVERLAPPED = unchecked((int)0x40000000);
         const int FILE_FLAG_SEQUENTIAL_SCAN = unchecked((int)0x08000000);
@@ -25,6 +26,7 @@ namespace Elte.WinIOProfiler
                                                    System.IO.FileMode creationDisposition,
                                                    int flagsAndAttributes,
                                                    IntPtr templateFile);
+
         #endregion DLLimport
 
         protected BasicIOSettings ioSettings;
@@ -132,11 +134,11 @@ namespace Elte.WinIOProfiler
             FileStream stream = null;
 
             if (!handle.IsInvalid)
-            {   /* Wrap the handle in a stream and return it to the caller */
+            {   
                 stream = new FileStream(handle, acc, blockSize, async);
             }
-            else                    // if create call failed to get a handle
-            {                       // return a null pointer. 
+            else                    
+            { 
                 stream = null;
                 handle = null;
             }

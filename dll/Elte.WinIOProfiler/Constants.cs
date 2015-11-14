@@ -8,6 +8,8 @@ namespace Elte.WinIOProfiler
 {
     public class Constants
     {
+        public const string DllKernel32 = "KERNEL32";
+
         public const long KiloByte = 0x400;
         public const long MegaByte = 0x100000;
         public const long GigaByte = 0x40000000;

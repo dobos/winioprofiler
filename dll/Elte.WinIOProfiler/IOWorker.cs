@@ -39,7 +39,14 @@ namespace Elte.WinIOProfiler
             buffers = new byte[outstanding][];
             for (int i = 0; i < buffers.Length; i++)
             {
-                buffers[i] = new byte[blockSize];
+                try
+                {
+                    buffers[i] = new byte[blockSize];
+                }
+                catch (OutOfMemoryException)
+                {
+                    throw new Exception("Cannot allocate more than " + Environment.WorkingSet);
+                }
             }
 
             waithandles = new AutoResetEvent[outstanding];

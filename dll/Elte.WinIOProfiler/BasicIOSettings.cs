@@ -136,7 +136,7 @@ namespace Elte.WinIOProfiler
             this.ioBuffering = IOBuffering.Unbuffered;
             this.stripeSize = 64;
 
-            this.threads = 1;
+            this.threads = 24;
             this.outstanding = 64;
             this.blockSize = 64;
             this.fileSizeMultiplier = 1;
