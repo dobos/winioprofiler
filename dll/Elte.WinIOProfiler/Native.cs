@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
+using Microsoft.Win32.SafeHandles;
 
 namespace Elte.WinIOProfiler
 {
@@ -18,6 +19,19 @@ namespace Elte.WinIOProfiler
             UInt16 Reserved1;
             UInt16 Reserved2;
         }
+
+        public const int FILE_FLAG_NO_BUFFERING = unchecked((int)0x20000000);
+        public const int FILE_FLAG_OVERLAPPED = unchecked((int)0x40000000);
+        public const int FILE_FLAG_SEQUENTIAL_SCAN = unchecked((int)0x08000000);
+
+        [DllImport("KERNEL32", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false)]
+        public static extern SafeFileHandle CreateFile(String fileName,
+                                                   int desiredAccess,
+                                                   System.IO.FileShare shareMode,
+                                                   IntPtr securityAttrs,
+                                                   System.IO.FileMode creationDisposition,
+                                                   int flagsAndAttributes,
+                                                   IntPtr templateFile);
 
         [DllImport(Constants.DllKernel32, SetLastError = true)]
         public static extern Boolean GetNumaHighestNodeNumber(out UInt32 highestNodeNumber);

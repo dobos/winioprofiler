@@ -94,7 +94,7 @@
     <Compile Include="IOWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SequentialReadWorker.cs" />
-    <Compile Include="ThreadScheduler.cs" />
+    <Compile Include="AffineThreadScheduler.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="WMI\Win32_DiskDrive.cs" />
     <Compile Include="WMI\Win32_DiskPartition.cs" />

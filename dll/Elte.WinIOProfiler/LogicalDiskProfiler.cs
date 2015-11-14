@@ -12,23 +12,6 @@ namespace Elte.WinIOProfiler
 {
     public class LogicalDiskProfiler
     {
-        #region DLLimport
-
-        const int FILE_FLAG_NO_BUFFERING = unchecked((int)0x20000000);
-        const int FILE_FLAG_OVERLAPPED = unchecked((int)0x40000000);
-        const int FILE_FLAG_SEQUENTIAL_SCAN = unchecked((int)0x08000000);
-
-        [DllImport("KERNEL32", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false)]
-        static extern SafeFileHandle CreateFile(String fileName,
-                                                   int desiredAccess,
-                                                   System.IO.FileShare shareMode,
-                                                   IntPtr securityAttrs,
-                                                   System.IO.FileMode creationDisposition,
-                                                   int flagsAndAttributes,
-                                                   IntPtr templateFile);
-
-        #endregion DLLimport
-
         protected BasicIOSettings ioSettings;
 
         protected string filename;
@@ -125,11 +108,11 @@ namespace Elte.WinIOProfiler
 
         protected FileStream OpenStream(string path, FileMode mode, FileAccess acc, FileShare share, bool sequential, bool async, int blockSize)
         {
-            int flags = FILE_FLAG_NO_BUFFERING;     // default to simmple no buffering
-            if (sequential) flags |= FILE_FLAG_SEQUENTIAL_SCAN;
-            if (async) flags |= FILE_FLAG_OVERLAPPED;
+            int flags = Native.FILE_FLAG_NO_BUFFERING;     // default to simmple no buffering
+            if (sequential) flags |= Native.FILE_FLAG_SEQUENTIAL_SCAN;
+            if (async) flags |= Native.FILE_FLAG_OVERLAPPED;
 
-            SafeFileHandle handle = CreateFile(path, (int)acc, share, IntPtr.Zero, mode, flags, IntPtr.Zero);
+            SafeFileHandle handle = Native.CreateFile(path, (int)acc, share, IntPtr.Zero, mode, flags, IntPtr.Zero);
 
             FileStream stream = null;
 
