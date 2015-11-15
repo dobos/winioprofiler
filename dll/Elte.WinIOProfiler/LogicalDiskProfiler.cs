@@ -147,46 +147,53 @@ namespace Elte.WinIOProfiler
 
             using (FileStream stream = OpenStream(filename, FileMode.Open, FileAccess.ReadWrite, FileShare.None, true, true, (int)IOSettings.BlockSize))
             {
-                var q = Enumerable.Range(0, IOSettings.Threads).AsParallel().WithDegreeOfParallelism(IOSettings.Threads).Select(i =>
-                    {
-
-                        var sw = new Stopwatch();
-                        sw.Start();
-
-                        IOWorker worker;
-                        switch (ioSettings.IOType)
-                        {
-                            case IOType.Read:
-                                worker = new SequentialReadWorker(stream, IOSettings.Outstanding, IOSettings.BlockSize);
-                                break;
-                            case IOType.Write:
-                                worker = new SequentialWriteWorker(stream, IOSettings.Outstanding, IOSettings.BlockSize);
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-                        
-
-                        while (sw.ElapsedMilliseconds < ioSettings.TimePerRun.TotalMilliseconds)
-                        {
-                            // reposition stream to the beginning if rest of file is less than the minimum required
-                            if (stream.Length - stream.Position < GetMinimumFileSize())
-                            {
-                                stream.Seek(0, SeekOrigin.Begin);
-                            }
-
-                            // Run on a single thread
-                            worker.Run(ioSettings.IOsPerRun / IOSettings.Threads);
-                        }
-
-                        sw.Stop();
-
-                        return worker.GetResults();
-
-                    });
-
-                results = IOWorkerResults.Merge(q);
+                var sch = new AffineThreadScheduler<IOWorkerResults>()
+                {
+                    ThreadCount = ioSettings.Threads
+                };
+                var res = sch.Execute(WorkerThread, stream);
+                this.results = IOWorkerResults.Merge(res);
             }
+        }
+
+        private IOWorkerResults WorkerThread(object state)
+        {
+            var stream = (FileStream)state;
+            var sw = new Stopwatch();
+            sw.Start();
+
+            IOWorker worker;
+            switch (ioSettings.IOType)
+            {
+                case IOType.Read:
+                    worker = new SequentialReadWorker(stream, IOSettings.IOsPerRun, IOSettings.Outstanding, IOSettings.BlockSize);
+                    break;
+                case IOType.Write:
+                    worker = new SequentialWriteWorker(stream, IOSettings.IOsPerRun, IOSettings.Outstanding, IOSettings.BlockSize);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+            while (sw.ElapsedMilliseconds < ioSettings.TimePerRun.TotalMilliseconds)
+            {
+                // reposition stream to the beginning if rest of file is less than the minimum required
+                if (stream.Length - stream.Position < GetMinimumFileSize())
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                }
+
+                // Run on a single thread
+                worker.Run(ioSettings.IOsPerRun / IOSettings.Threads);
+            }
+
+            sw.Stop();
+
+            var res = worker.GetResults();
+            worker.Dispose();
+
+            return res;
         }
 
         public IOWorkerResults GetResults()
