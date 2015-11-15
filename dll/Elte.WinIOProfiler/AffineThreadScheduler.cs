@@ -12,7 +12,7 @@ namespace Elte.WinIOProfiler
         private int[][] cpuMask;
 
         private CountdownEvent countdownEvent;
-        private Func<TResult> worker;
+        private Func<object, TResult> worker;
         private TResult[] results;
         private Thread[] threads;
 
@@ -44,7 +44,7 @@ namespace Elte.WinIOProfiler
             this.threads = null;
         }
 
-        public TResult[] Execute(Func<TResult> worker)
+        public TResult[] Execute(Func<object, TResult> worker, object state)
         {
             this.countdownEvent = new CountdownEvent(threadCount);
             this.worker = worker;
@@ -53,7 +53,7 @@ namespace Elte.WinIOProfiler
 
             for (int i = 0; i < threadCount; i++)
             {
-                threads[i] = CreateThread(i);
+                threads[i] = CreateThread(i, state);
             }
 
             countdownEvent.Wait();
@@ -62,19 +62,20 @@ namespace Elte.WinIOProfiler
             return results;
         }
 
-        private Thread CreateThread(int i)
+        private Thread CreateThread(int i, object state)
         {
             var start = new ParameterizedThreadStart(ThreadWorker);
             var thread = new Thread(start);
-            thread.Start(i);
+            thread.Start(new object[] {i, state});
             return thread;
         }
 
-        private void ThreadWorker(object state)
+        private void ThreadWorker(object parameters)
         {
             Thread.BeginThreadAffinity();
 
-            int i = (int)state;
+            int i = (int)((object[])parameters)[0];
+            object state = ((object[])parameters)[1];
             UIntPtr mask;
             UIntPtr oldMask = UIntPtr.Zero;
 
@@ -85,16 +86,16 @@ namespace Elte.WinIOProfiler
             }
 
             // Do the actual work
-            this.results[i] = this.worker();
+            this.results[i] = this.worker(state);
 
             if (oldMask != UIntPtr.Zero)
             {
                 SetThreadCpuAffinity(oldMask);
             }
 
-            countdownEvent.Signal();
-
             Thread.EndThreadAffinity();
+
+            countdownEvent.Signal();
         }
 
         private UIntPtr GetCpuMask(params int[] cpus)
