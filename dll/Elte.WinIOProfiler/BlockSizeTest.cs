@@ -17,7 +17,8 @@ namespace Elte.WinIOProfiler
     {
         //private static readonly uint[] BlockSizes = { 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576 };
         //private static readonly uint[] BlockSizes = { 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576 };
-        private static readonly uint[] BlockSizes = { 512, 4096, 65536, 131072, 262144, 1048576, 2097152, 4194304, 8388608 };
+        //private static readonly uint[] BlockSizes = { 512, 4096, 65536, 131072, 262144, 1048576, 2097152, 4194304, 8388608 };
+        private static readonly uint[] BlockSizes = { 4096, 8192, 16384, 32768, 65536 };
         //private static readonly uint[] BlockSizes = { 65536 };
         private LogicalDiskProfiler[] profilers;
 
@@ -69,11 +70,10 @@ namespace Elte.WinIOProfiler
                     profilers[j].IOSettings.BlockSize = BlockSizes[i];
                 }
 
+                // TODO: this here would be used to start parallel loads
+
                 StartCounters();
-                profilers.AsParallel().WithDegreeOfParallelism(profilers.Length).ForAll(p =>
-                {
-                    p.Run();
-                });
+                profilers.AsParallel().WithDegreeOfParallelism(profilers.Length).ForAll(p => { p.Run(); });
                 StopCounters();
 
                 RecordResults(IOWorkerResults.Merge(profilers.Select(p => p.GetResults())), String.Format("Block size {0}", Util.FormatFileSize(BlockSizes[i])));
@@ -82,7 +82,7 @@ namespace Elte.WinIOProfiler
 
         protected override void FinalizeTest()
         {
-            
+
         }
 
         public override IOTestPlot[] GetPlots()

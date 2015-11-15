@@ -16,11 +16,12 @@ namespace Elte.WinIOProfiler
                 ThreadCount = 2
             };
 
-            var res = sch.Execute(() => 
+            var res = sch.Execute((i) => 
             { 
                 Thread.SpinWait(1000);
                 return 1;
-            });
+            },
+            3);
 
             Assert.AreEqual(2, res.Length);
         }
