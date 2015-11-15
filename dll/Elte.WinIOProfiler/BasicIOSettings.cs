@@ -14,6 +14,7 @@ namespace Elte.WinIOProfiler
         private int stripeSize;
 
         private int threads;
+        private int[][] cpuMask;
         private int outstanding;
         private uint blockSize;
         private int fileSizeMultiplier;
@@ -78,6 +79,16 @@ namespace Elte.WinIOProfiler
         }
 
         /// <summary>
+        /// Gets or sets the CPU mask of threads. If null, thread affinity is
+        /// not specified.
+        /// </summary>
+        public int[][] CpuMask
+        {
+            get { return cpuMask; }
+            set { cpuMask = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the number of outstanding IO jobs per thread.
         /// </summary>
         public int Outstanding
@@ -87,7 +98,8 @@ namespace Elte.WinIOProfiler
         }
 
         /// <summary>
-        /// Gets or sets the block size of the IO operations.
+        /// Gets or sets the block size of the IO operations that happen in
+        /// a single for loop.
         /// </summary>
         public uint BlockSize
         {
@@ -136,7 +148,14 @@ namespace Elte.WinIOProfiler
             this.ioBuffering = IOBuffering.Unbuffered;
             this.stripeSize = 64;
 
-            this.threads = 24;
+            this.threads = 4;
+            this.cpuMask = new [] 
+                {
+                    new [] { 2 },
+                    new [] { 2 },
+                    new [] { 2 },
+                    new [] { 2 },
+                };
             this.outstanding = 64;
             this.blockSize = 64;
             this.fileSizeMultiplier = 1;
@@ -153,6 +172,7 @@ namespace Elte.WinIOProfiler
             this.stripeSize = old.stripeSize;
 
             this.threads = old.threads;
+            this.cpuMask = old.cpuMask;     // TODO: deep copy here
             this.outstanding = old.outstanding;
             this.blockSize = old.blockSize;
             this.fileSizeMultiplier = old.fileSizeMultiplier;

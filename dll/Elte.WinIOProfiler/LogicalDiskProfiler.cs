@@ -145,11 +145,12 @@ namespace Elte.WinIOProfiler
                     throw new NotImplementedException();
             }
 
-            using (FileStream stream = OpenStream(filename, FileMode.Open, FileAccess.ReadWrite, FileShare.None, true, true, (int)IOSettings.BlockSize))
+            using (FileStream stream = OpenStream(filename, FileMode.Open, access, FileShare.None, true, true, (int)IOSettings.BlockSize))
             {
                 var sch = new AffineThreadScheduler<IOWorkerResults>()
                 {
-                    ThreadCount = ioSettings.Threads
+                    ThreadCount = ioSettings.Threads,
+                    CpuMask = ioSettings.CpuMask,
                 };
                 var res = sch.Execute(WorkerThread, stream);
                 this.results = IOWorkerResults.Merge(res);
