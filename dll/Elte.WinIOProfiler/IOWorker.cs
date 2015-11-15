@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,114 +9,129 @@ using System.Diagnostics;
 
 namespace Elte.WinIOProfiler
 {
-    public abstract class IOWorker
+    public abstract class IOWorker : IDisposable
     {
+        private class Slot
+        {
+            public bool Empty;
+            public byte[] Buffer;
+            public Stopwatch Watch;
+            public IOWorkerResults Results;
+
+            public Slot(long blockSize)
+            {
+                Empty = true;
+                Buffer = new byte[blockSize];
+                Watch = new Stopwatch();
+                Results = new IOWorkerResults();
+            }
+        }
+
+
         private FileStream stream;
 
+        protected int iosPerRun;
         protected int outstanding;
         protected long blockSize;
 
-        protected int[] runs;
-        protected byte[][] buffers;
-        protected AutoResetEvent[] waithandles;
-        protected Stopwatch[] watches;
+        protected SemaphoreSlim semaphore;
 
-        protected IOWorkerResults[] results;
+        private Slot[] slots;
 
-        public IOWorker(FileStream stream, int outstanding, long blockSize)
+        public IOWorker(FileStream stream, int iosPerRun, int outstanding, long blockSize)
         {
             this.stream = stream;
+
+            this.iosPerRun = iosPerRun;
             this.outstanding = outstanding;
             this.blockSize = blockSize;
 
-            InitializeMembers();
+            InitializeSlots();
         }
 
-        private void InitializeMembers()
+        public void Dispose()
         {
-            runs = new int[outstanding];
+            if (semaphore != null)
+            {
+                semaphore.Dispose();
+                semaphore = null;
+            }
+        }
+
+        private void InitializeSlots()
+        {
+            this.semaphore = new SemaphoreSlim(outstanding);
 
             // Initialize buffers for the outstanding IO ops
-            buffers = new byte[outstanding][];
-            for (int i = 0; i < buffers.Length; i++)
+            try
             {
-                try
+                slots = new Slot[outstanding];
+
+                for (int i = 0; i < outstanding; i++)
                 {
-                    buffers[i] = new byte[blockSize];
-                }
-                catch (OutOfMemoryException)
-                {
-                    throw new Exception("Cannot allocate more than " + Environment.WorkingSet);
+                    slots[i] = new Slot(blockSize);
                 }
             }
-
-            waithandles = new AutoResetEvent[outstanding];
-            for (int i = 0; i < waithandles.Length; i++)
+            catch (OutOfMemoryException)
             {
-                waithandles[i] = new AutoResetEvent(true);
-            }
-
-            watches = new Stopwatch[outstanding];
-            for (int i = 0; i < watches.Length; i++)
-            {
-                watches[i] = new Stopwatch();
-            }
-
-            // Initialize counters
-            results = new IOWorkerResults[outstanding];
-            for (int i = 0; i < results.Length; i++)
-            {
-                results[i] = new IOWorkerResults();
+                throw new Exception("Cannot allocate more than " + Environment.WorkingSet);
             }
         }
 
         public void Run(int run)
         {
             int rr = run;
+
             while (rr > 0)
             {
-                int slot = WaitHandle.WaitAny(waithandles);
+                semaphore.Wait();
 
-                watches[slot].Reset();
-                watches[slot].Start();
-                BeginIOOperation(stream, buffers[slot], IOOperationCallback, slot);
+                // find a slot that's not running
+                int slot = -1;
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    if (slots[i].Empty)
+                    {
+                        slot = i;
+                    }
+                }
 
-                runs[slot] = rr;
+                slots[slot].Empty = false;
+                slots[slot].Watch.Reset();
+                slots[slot].Watch.Start();
 
                 rr--;
+
+                OnBeginIOOperation(stream, slots[slot].Buffer, IOOperationCallback, slot);
             }
 
-            WaitHandle.WaitAll(waithandles);
-            for (int i = 0; i < waithandles.Length; i++)
-            {
-                waithandles[i].Set();
-            }
+            // wait for all other threads
+            semaphore.Wait(outstanding);
+            semaphore.Release(outstanding);
         }
 
-        protected abstract IAsyncResult BeginIOOperation(FileStream stream, byte[] buffer, AsyncCallback callback, object asyncState);
-        
-        protected abstract int EndIOOperation(FileStream stream, IAsyncResult ar);
+        protected abstract IAsyncResult OnBeginIOOperation(FileStream stream, byte[] buffer, AsyncCallback callback, object asyncState);
+
+        protected abstract long OnEndIOOperation(FileStream stream, IAsyncResult ar);
 
         private void IOOperationCallback(IAsyncResult ar)
         {
-            int res = EndIOOperation(stream, ar);
+            long res = OnEndIOOperation(stream, ar);
+            int slot = (int)ar.AsyncState;
+
+            // Update counters
+            slots[slot].Watch.Stop();
+            slots[slot].Results.Append(slots[slot].Watch.Elapsed, res);
 
             // TODO: check number of bytes read
 
-            int slot = (int)ar.AsyncState;
-
-            watches[slot].Stop();
-
-            // Update counters
-            results[slot].Append(watches[slot].Elapsed, res);            
-
-            runs[slot] = 0;
-            waithandles[slot].Set();
+            slots[slot].Empty = true;
+            semaphore.Release();
         }
 
         public IOWorkerResults GetResults()
         {
-            return IOWorkerResults.Merge(results);
+            return IOWorkerResults.Merge(slots.Select(s => s.Results));
         }
     }
 }
